@@ -1,5 +1,7 @@
 package com.example.android.pets;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.android.pets.data.PetContract.PetsEntry;
 
@@ -19,16 +22,24 @@ import com.example.android.pets.data.PetContract.PetsEntry;
  */
 public class EditorActivity extends AppCompatActivity {
 
-    /** EditText field to enter the pet's name */
+    /**
+     * EditText field to enter the pet's name
+     */
     private EditText mNameEditText;
 
-    /** EditText field to enter the pet's breed */
+    /**
+     * EditText field to enter the pet's breed
+     */
     private EditText mBreedEditText;
 
-    /** EditText field to enter the pet's weight */
+    /**
+     * EditText field to enter the pet's weight
+     */
     private EditText mWeightEditText;
 
-    /** EditText field to enter the pet's gender */
+    /**
+     * EditText field to enter the pet's gender
+     */
     private Spinner mGenderSpinner;
 
     /**
@@ -36,6 +47,9 @@ public class EditorActivity extends AppCompatActivity {
      * 0 for unknown gender, 1 for male, 2 for female.
      */
     private int mGender = 0;
+
+    //Class-wide instance variable
+    private PetDBHelper mDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +63,9 @@ public class EditorActivity extends AppCompatActivity {
         mGenderSpinner = (Spinner) findViewById(R.id.spinner_gender);
 
         setupSpinner();
+
+        //Create an instance of the PetDBHelper class
+        mDbHelper = new PetDBHelper(this);
     }
 
     /**
@@ -90,6 +107,36 @@ public class EditorActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Gets user input from the editor interface and save into the database
+     */
+    private void insertNewPet() {
+        //Create an instance of the writable database
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        //Create the key, value pairs
+        ContentValues values = new ContentValues();
+        values.put(PetsEntry.COLUMN_PET_NAME, mNameEditText.getText().toString().trim());
+        values.put(PetsEntry.COLUMN_PET_BREED, mBreedEditText.getText().toString().trim());
+        values.put(PetsEntry.COLUMN_PET_GENDER, mGender);
+        values.put(PetsEntry.COLUMN_PET_WEIGHT, Integer.parseInt(mWeightEditText.getText().toString().trim()));
+
+        //Insert the data into a new row, with the row ID being returned
+        long newRowId = db.insert(PetsEntry.TABLE_NAME, null, values);
+
+        //Notify the user of the success/or not of the query
+        if (newRowId != -1) {
+            Toast.makeText(getApplicationContext(), "Pet saved with ID: " + newRowId, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "Error with saving pet", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * Override method that creates the menu options
+     *
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu options from the res/menu/menu_editor.xml file.
@@ -98,13 +145,22 @@ public class EditorActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Override method that handles the selection of the menu items
+     *
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                // Do nothing for now
+                //Insert a new pet into the database
+                insertNewPet();
+                //Return to the previous page
+                finish();
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:

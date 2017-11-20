@@ -2,9 +2,14 @@ package com.example.android.pets.data;
 
 import android.provider.BaseColumns;
 
+/**
+ * The contract class holds all of the constants that will be used for the SQLite DB throughout the other classes
+ * These include table & column names, as well as other constants
+ */
 public final class PetContract {
-    //Make constructor private
-    private PetContract() {}
+    //Private constructor
+    private PetContract() {
+    }
 
     /**
      * Inner class that defines the table contents
@@ -21,5 +26,4 @@ public final class PetContract {
         public static final int GENDER_MALE = 1;
         public static final int GENDER_FEMALE = 2;
     }
-
 }
