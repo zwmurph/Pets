@@ -20,7 +20,7 @@ import com.example.android.pets.data.PetContract.PetsEntry;
  */
 public class CatalogActivity extends AppCompatActivity {
 
-    //Class-wide instance variable
+    //Class-wide instance variable of the DB helper class
     private PetDBHelper mDbHelper;
 
     /**
