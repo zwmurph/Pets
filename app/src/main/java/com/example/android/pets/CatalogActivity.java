@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.example.android.pets.data.PetContract.PetsEntry;
 
 /**
- * This is the MainActivity, it displays list of pets that were entered and stored in the app.
+ * This is the MainActivity, it displays a list of pets that were entered and stored in the app.
  */
 public class CatalogActivity extends AppCompatActivity {
 
@@ -26,7 +26,7 @@ public class CatalogActivity extends AppCompatActivity {
     /**
      * Override method that deals with the creation of this activity
      * @param savedInstanceState - if any non-persistent data is stored, this brings it back in if
-     * the activity needs to be recreated (orientation change)
+     * the activity needs to be recreated (e.g. an orientation change)
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +58,7 @@ public class CatalogActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        //Show the latest DB results
         displayDatabaseInfo();
     }
 
@@ -65,12 +66,11 @@ public class CatalogActivity extends AppCompatActivity {
      * Temporary helper method to display information in the onscreen TextView about the state of the DB
      */
     private void displayDatabaseInfo() {
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity.
+        //To access the database, the subclass of SQLiteOpenHelper is instantiated and is passed the context: the current activity
         PetDBHelper mDbHelper = new PetDBHelper(this);
 
-        // Create and/or open a database object to read from it
-        //If the database already exists a connection to it will be established
+        //Create and/or open a database object to read from it
+        //If the database already exists a connection to it will be established, as opposed to overwriting it
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
         //The projection (the columns to return)
@@ -81,30 +81,37 @@ public class CatalogActivity extends AppCompatActivity {
                 PetsEntry.COLUMN_PET_GENDER,
                 PetsEntry.COLUMN_PET_WEIGHT
         };
+        
+        //An exselection (the WHERE part of the SQL query)
+        //String selection = PetsEntry._ID + "=?";
+        //The selection arguments, seperated to prevent an SQL injection
+        //String[] selectionArgs = {"1"};
 
         //Get a Cursor that returns all columns and rows from the pets table
         Cursor cursor = db.query(
-                PetsEntry.TABLE_NAME,
-                projection,
-                null,
-                null,
-                null,
-                null,
-                null
+                PetsEntry.TABLE_NAME, //The table to query
+                projection, //The columns to return
+                null, //The columns for the WHERE clause
+                null, //The values for the WHERE clause
+                null, //Group by
+                null, //Filter by
+                null //Sort/order by
         );
 
         //Get the TextView as an object
         TextView displayView = (TextView) findViewById(R.id.text_view_pet);
-
+        
+        //Use a try:finally block so that the cursor can be closed
         try {
-            // Create a header in the Text View that looks like this:
+            //Create a header in the Text View that looks like this:
             //
-            // The pets table contains <number of rows in Cursor> pets.
+            //The pets table contains <number of rows in Cursor> pets.
             // _id - name - breed - gender - weight
             //
-            // In the while loop below, iterate through the rows of the cursor and display
-            // the information from each column in this order.
+            //In the while loop below, iterate through the rows of the cursor and display
+            //the information from each column in this order.
             displayView.setText("The pets table contains " + cursor.getCount() + " pets.\n\n");
+            //Use append so that more text can be added without the need for extra variables
             displayView.append(
                     PetsEntry._ID + " - " +
                             PetsEntry.COLUMN_PET_NAME + " - " +
@@ -113,14 +120,14 @@ public class CatalogActivity extends AppCompatActivity {
                             PetsEntry.COLUMN_PET_WEIGHT + "\n"
             );
 
-            // Figure out the index of each column
+            //Figure out the index of each column
             int idColumnIndex = cursor.getColumnIndex(PetsEntry._ID);
             int nameColumnIndex = cursor.getColumnIndex(PetsEntry.COLUMN_PET_NAME);
             int breedColumnIndex = cursor.getColumnIndex(PetsEntry.COLUMN_PET_BREED);
             int genderColumnIndex = cursor.getColumnIndex(PetsEntry.COLUMN_PET_GENDER);
             int weightColumnIndex = cursor.getColumnIndex(PetsEntry.COLUMN_PET_WEIGHT);
 
-            // Iterate through all the returned rows in the cursor
+            //Iterate through each returned row in the cursor, one at a time
             while (cursor.moveToNext()) {
                 // Use the indexes above to extract the String or Int value of the word at the current row the cursor is on.
                 int currentID = cursor.getInt(idColumnIndex);
@@ -129,7 +136,7 @@ public class CatalogActivity extends AppCompatActivity {
                 int currentGender = cursor.getInt(genderColumnIndex);
                 int currentWeight = cursor.getInt(weightColumnIndex);
 
-                // Display the values from each column of the current row in the cursor in the TextView
+                //Display the values from each column of the current row in the cursor in the TextView
                 displayView.append(("\n" +
                         currentID + " - " +
                         currentName + " - " +
@@ -139,8 +146,7 @@ public class CatalogActivity extends AppCompatActivity {
                 ));
             }
         } finally {
-            // Always close the cursor when you're done reading from it. This releases all its
-            // resources and makes it invalid.
+            //Close the cursor now that's it finished with. This releases all its resources and makes it invalid.
             cursor.close();
         }
     }
@@ -152,7 +158,7 @@ public class CatalogActivity extends AppCompatActivity {
         //Create an instance of the writable database
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-        //Create the key, value pairs
+        //Create the key:value pairs
         ContentValues values = new ContentValues();
         values.put(PetsEntry.COLUMN_PET_NAME, "Toto");
         values.put(PetsEntry.COLUMN_PET_BREED, "Terrier");
@@ -168,8 +174,8 @@ public class CatalogActivity extends AppCompatActivity {
     /**
      * Override method that creates the menu options
      *
-     * @param menu
-     * @return
+     * @param menu - the menu that should be passed in
+     * @return - the inflated menu
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -182,21 +188,21 @@ public class CatalogActivity extends AppCompatActivity {
     /**
      * Override method that handles the selection of the menu items
      *
-     * @param item
-     * @return
+     * @param item - the particular menu item that the user has selected
+     * @return - the actions that clicking on the menu item triggers
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // User clicked on a menu option in the app bar overflow menu
+        //Switch statement for when a user clicks on an overflow menu item
         switch (item.getItemId()) {
-            // Respond to a click on the "Insert dummy data" menu option
+            //Respond to a click on the "Insert dummy data" menu option
             case R.id.action_insert_dummy_data:
                 insertPet();
                 displayDatabaseInfo();
                 return true;
-            // Respond to a click on the "Delete all entries" menu option
+            //Respond to a click on the "Delete all entries" menu option
             case R.id.action_delete_all_entries:
-                // Do nothing for now
+                //Do nothing for now
                 return true;
         }
         return super.onOptionsItemSelected(item);
