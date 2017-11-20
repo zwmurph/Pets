@@ -184,7 +184,7 @@ public class CatalogActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_catalog, menu);
         return true;
     }
-
+    
     /**
      * Override method that handles the selection of the menu items
      *
