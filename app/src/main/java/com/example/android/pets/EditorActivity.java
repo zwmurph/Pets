@@ -18,39 +18,21 @@ import android.widget.Toast;
 import com.example.android.pets.data.PetContract.PetsEntry;
 
 /**
- * Allows user to create a new pet or edit an existing one.
+ * This is the EditorActivity class, it allows the user to create a new pet or edit an existing one.
  */
 public class EditorActivity extends AppCompatActivity {
 
-    /**
-     * EditText field to enter the pet's name
-     */
-    private EditText mNameEditText;
+    //Class-wide instance variables
+    private EditText mNameEditText; //EditText field to enter the pet's name
+    private EditText mBreedEditText; //EditText field to enter the pet's breed
+    private EditText mWeightEditText; //EditText field to enter the pet's weight
+    private Spinner mGenderSpinner; //EditText field to enter the pet's gender
+    private PetDBHelper mDbHelper; //The DB helper class
+    private int mGender = 0; //Gender of the pet. The possible values are: 0-unknown, 1-male, 2-female
 
     /**
-     * EditText field to enter the pet's breed
+     * Override method for onCreate
      */
-    private EditText mBreedEditText;
-
-    /**
-     * EditText field to enter the pet's weight
-     */
-    private EditText mWeightEditText;
-
-    /**
-     * EditText field to enter the pet's gender
-     */
-    private Spinner mGenderSpinner;
-
-    /**
-     * Gender of the pet. The possible values are:
-     * 0 for unknown gender, 1 for male, 2 for female.
-     */
-    private int mGender = 0;
-
-    //Class-wide instance variable
-    private PetDBHelper mDbHelper;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +43,8 @@ public class EditorActivity extends AppCompatActivity {
         mBreedEditText = (EditText) findViewById(R.id.edit_pet_breed);
         mWeightEditText = (EditText) findViewById(R.id.edit_pet_weight);
         mGenderSpinner = (Spinner) findViewById(R.id.spinner_gender);
-
+        
+        //Set-up the spinner with its relevant options
         setupSpinner();
 
         //Create an instance of the PetDBHelper class
@@ -72,18 +55,16 @@ public class EditorActivity extends AppCompatActivity {
      * Setup the dropdown spinner that allows the user to select the gender of the pet.
      */
     private void setupSpinner() {
-        // Create adapter for spinner. The list options are from the String array it will use
-        // the spinner will use the default layout
-        ArrayAdapter genderSpinnerAdapter = ArrayAdapter.createFromResource(this,
-                R.array.array_gender_options, android.R.layout.simple_spinner_item);
+        //Create an adapter for the spinner. The list options it will use are from the String array, it will use the default layout
+        ArrayAdapter genderSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.array_gender_options, android.R.layout.simple_spinner_item);
 
-        // Specify dropdown layout style - simple list view with 1 item per line
+        //Specify the dropdown layout style - a simple list view with 1 item per line
         genderSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 
-        // Apply the adapter to the spinner
+        //Apply the adapter to the spinner
         mGenderSpinner.setAdapter(genderSpinnerAdapter);
 
-        // Set the integer mSelected to the constant values
+        //Set the integer mSelected to the constant values
         mGenderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -99,7 +80,7 @@ public class EditorActivity extends AppCompatActivity {
                 }
             }
 
-            // Because AdapterView is an abstract class, onNothingSelected must be defined
+            //Because AdapterView is an abstract class, onNothingSelected must be defined
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 mGender = 0; // Unknown
@@ -113,7 +94,7 @@ public class EditorActivity extends AppCompatActivity {
     private void insertNewPet() {
         //Create an instance of the writable database
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        //Create the key, value pairs
+        //Create the key:value pairs
         ContentValues values = new ContentValues();
         values.put(PetsEntry.COLUMN_PET_NAME, mNameEditText.getText().toString().trim());
         values.put(PetsEntry.COLUMN_PET_BREED, mBreedEditText.getText().toString().trim());
@@ -139,8 +120,8 @@ public class EditorActivity extends AppCompatActivity {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu options from the res/menu/menu_editor.xml file.
-        // This adds menu items to the app bar.
+        //Inflate the menu options from the res/menu/menu_editor.xml file.
+        //This adds menu items to the app bar.
         getMenuInflater().inflate(R.menu.menu_editor, menu);
         return true;
     }
@@ -153,22 +134,22 @@ public class EditorActivity extends AppCompatActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // User clicked on a menu option in the app bar overflow menu
+        //Switch statement for when a user clicks on an overflow menu item in the app bar
         switch (item.getItemId()) {
-            // Respond to a click on the "Save" menu option
+            //Respond to a click on the "Save" menu option
             case R.id.action_save:
                 //Insert a new pet into the database
                 insertNewPet();
                 //Return to the previous page
                 finish();
                 return true;
-            // Respond to a click on the "Delete" menu option
+            //Respond to a click on the "Delete" menu option
             case R.id.action_delete:
-                // Do nothing for now
+                //Do nothing for now
                 return true;
-            // Respond to a click on the "Up" arrow button in the app bar
+            //Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
-                // Navigate back to parent activity (CatalogActivity)
+                //Navigate back to parent activity (CatalogActivity)
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
         }
