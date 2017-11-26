@@ -82,9 +82,9 @@ public class CatalogActivity extends AppCompatActivity {
                 PetsEntry.COLUMN_PET_WEIGHT
         };
         
-        //An exselection (the WHERE part of the SQL query)
+        //An example selection (the WHERE part of the SQL query)
         //String selection = PetsEntry._ID + "=?";
-        //The selection arguments, seperated to prevent an SQL injection
+        //The selection arguments, separated to prevent an SQL injection
         //String[] selectionArgs = {"1"};
 
         //Get a Cursor that returns all columns and rows from the pets table
