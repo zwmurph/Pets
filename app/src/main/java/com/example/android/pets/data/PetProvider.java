@@ -2,10 +2,9 @@ package com.example.android.pets.data;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
-
-import com.example.android.pets.PetDBHelper;
 
 /**
  * This class is the Content Provider class for the app
@@ -17,6 +16,25 @@ public class PetProvider extends ContentProvider {
 
     //Class-wide instance variable of the DB helper class
     private PetDBHelper mDbHelper;
+
+    //Global variables for match case integers for Uri matcher
+    private static final int PETS = 100;
+    private static final int PET_ID = 101;
+
+    //Global variable for the Uri matcher
+    private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+
+    /**
+     * The calls to addURI() go here, for all of the content URI patterns that the provider should recognize
+     */
+    static {
+        //Adds the URI match for the whole pets table
+        sUriMatcher.addURI(PetContract.CONTENT_AUTHORITY, PetContract.PATH_PETS, PETS);
+
+        //Adds the URI match for a single row of the pets table
+        // # is used as a wildcard to support any integer for the specified row number
+        sUriMatcher.addURI(PetContract.CONTENT_AUTHORITY, PetContract.PATH_PETS + "/#", PET_ID);
+    }
 
     /**
      * Initialise the provider and the database helper object.

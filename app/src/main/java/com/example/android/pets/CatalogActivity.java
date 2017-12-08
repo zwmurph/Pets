@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.android.pets.data.PetContract.PetsEntry;
+import com.example.android.pets.data.PetDBHelper;
 
 /**
  * This is the MainActivity, it displays a list of pets that were entered and stored in the app.

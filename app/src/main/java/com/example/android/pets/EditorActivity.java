@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.android.pets.data.PetContract.PetsEntry;
+import com.example.android.pets.data.PetDBHelper;
 
 /**
  * This is the EditorActivity class, it allows the user to create a new pet or edit an existing one.
